@@ -16,6 +16,10 @@ function App() {
 
   useEffect(() => {
     const handleKeyDown = ({ key }) => {
+      if (over && key === " ") {
+        restartGame();
+      }
+
       if (key === "ArrowLeft" && direction !== "right") setDirection("left");
       else if (key === "ArrowRight" && direction !== "left")
         setDirection("right");
@@ -70,6 +74,21 @@ function App() {
   const handleGameover = () => {
     setDirection("stop");
     setOver(true);
+  };
+
+  const restartGame = () => {
+    setOver(false);
+    setSnake([
+      {
+        x: Math.floor(Math.random() * 15),
+        y: Math.floor(Math.random() * 15),
+      },
+    ]); // 重新設定蛇的位置
+    setApple({
+      x: Math.floor(Math.random() * 15),
+      y: Math.floor(Math.random() * 15),
+    }); // 重新設定蘋果的位置
+    setScore(0);
   };
 
   return (
