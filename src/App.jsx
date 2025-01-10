@@ -10,8 +10,20 @@ function App() {
     { x: 5, y: 7 },
   ]); // 蛇的起始位置
   const [apple, setApple] = useState({ x: 6, y: 6 }); // 蘋果的位置
-  const [direction, setDirection] = useState("left"); // 蛇的移動方向
+  const [direction, setDirection] = useState("right"); // 蛇的移動方向
   const [over, setOver] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = ({ key }) => {
+      if (key === "ArrowLeft" && direction !== "right") setDirection("left");
+      else if (key === "ArrowRight" && direction !== "left")
+        setDirection("right");
+      else if (key === "ArrowUp" && direction !== "down") setDirection("up");
+      else if (key === "ArrowDown" && direction !== "up") setDirection("down");
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [direction]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -28,7 +40,7 @@ function App() {
 
       if (head.x > 14 || head.x < 0 || head.y > 14 || head.y < 0) {
         // alert("Game Over");
-        window.location.reload(); //自動重整視窗
+        //window.location.reload(); //自動重整視窗
         handleGameover();
         return;
       }
