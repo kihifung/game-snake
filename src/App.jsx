@@ -11,9 +11,14 @@ function App() {
   ]); // 蛇的起始位置
   const [apple, setApple] = useState({ x: 6, y: 6 }); // 蘋果的位置
   const [direction, setDirection] = useState("left"); // 蛇的移動方向
+  const [over, setOver] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
+      if (over) {
+        // clearInterval(timer);
+        return;
+      }
       const head = { ...snake[0] };
 
       if (direction === "right") head.x += 1;
@@ -21,12 +26,24 @@ function App() {
       else if (direction === "down") head.y += 1;
       else if (direction === "up") head.y -= 1;
 
+      if (head.x > 14 || head.x < 0 || head.y > 14 || head.y < 0) {
+        // alert("Game Over");
+        window.location.reload(); //自動重整視窗
+        handleGameover();
+        return;
+      }
+
       const snakeCopy = [head, ...snake];
       snakeCopy.pop();
       setSnake(snakeCopy);
     }, 200);
     return () => clearInterval(timer);
   }, [snake, direction]);
+
+  const handleGameover = () => {
+    setDirection("stop");
+    setOver(true);
+  };
 
   return (
     <div className="App">
