@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./App.css";
+import { useEffect } from "react";
 
 function App() {
   // 程式碼寫這裡
@@ -9,6 +10,24 @@ function App() {
     { x: 5, y: 7 },
   ]); // 蛇的起始位置
   const [apple, setApple] = useState({ x: 6, y: 6 }); // 蘋果的位置
+  const [direction, setDirection] = useState("left"); // 蛇的移動方向
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const head = { ...snake[0] };
+
+      if (direction === "right") head.x += 1;
+      else if (direction === "left") head.x -= 1;
+      else if (direction === "down") head.y += 1;
+      else if (direction === "up") head.y -= 1;
+
+      const snakeCopy = [head, ...snake];
+      snakeCopy.pop();
+      setSnake(snakeCopy);
+    }, 200);
+    return () => clearInterval(timer);
+  }, [snake, direction]);
+
   return (
     <div className="App">
       <h1>貪食蛇</h1>
