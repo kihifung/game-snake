@@ -12,6 +12,7 @@ function App() {
   const [apple, setApple] = useState({ x: 6, y: 6 }); // 蘋果的位置
   const [direction, setDirection] = useState("right"); // 蛇的移動方向
   const [over, setOver] = useState(false);
+  const [score, setScore] = useState(0);
 
   useEffect(() => {
     const handleKeyDown = ({ key }) => {
@@ -38,7 +39,13 @@ function App() {
       else if (direction === "down") head.y += 1;
       else if (direction === "up") head.y -= 1;
 
-      if (head.x > 14 || head.x < 0 || head.y > 14 || head.y < 0) {
+      if (
+        head.x > 14 ||
+        head.x < 0 ||
+        head.y > 14 ||
+        head.y < 0 ||
+        snake.some((body) => body.x === head.x && body.y === head.y)
+      ) {
         // alert("Game Over");
         //window.location.reload(); //自動重整視窗
         handleGameover();
@@ -50,11 +57,13 @@ function App() {
           x: Math.floor(Math.random() * 15),
           y: Math.floor(Math.random() * 15),
         });
+        // setScore(prev=> prev+1);
+        setScore(score + 1);
       } else {
         snakeCopy.pop();
       }
       setSnake(snakeCopy);
-    }, 200);
+    }, 100); // 速度
     return () => clearInterval(timer);
   }, [snake, direction]);
 
@@ -90,6 +99,13 @@ function App() {
               })
           )}
       </div>
+      <div className="score">得分: {score} </div>
+      {over && (
+        <>
+          <div className="score">遊戲結束</div>
+          <div className="score">按下"空白鍵"，可重新遊戲</div>
+        </>
+      )}
     </div>
   );
 }
