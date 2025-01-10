@@ -44,9 +44,15 @@ function App() {
         handleGameover();
         return;
       }
-
       const snakeCopy = [head, ...snake];
-      snakeCopy.pop();
+      if (apple.x === head.x && apple.y === head.y) {
+        setApple({
+          x: Math.floor(Math.random() * 15),
+          y: Math.floor(Math.random() * 15),
+        });
+      } else {
+        snakeCopy.pop();
+      }
       setSnake(snakeCopy);
     }, 200);
     return () => clearInterval(timer);
