@@ -1,41 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
-import { useEffect } from "react";
+
+const randomPosition = () => ({
+  x: Math.floor(Math.random() * 15),
+  y: Math.floor(Math.random() * 15),
+});
+const initialApple = randomPosition; // 設定初始蘋果位置
+const initialDirection = "right"; // 設定初始方向
+const initialScore = 0; // 設定初始分數
+// const initialHighScore = initialScore; // 設定初始歷史分數
 
 function App() {
-  // 程式碼寫這裡
-  const [snake, setSnake] = useState([
-    { x: 5, y: 5 },
-    { x: 5, y: 6 },
-    { x: 5, y: 7 },
-  ]); // 蛇的起始位置
-  const [apple, setApple] = useState({ x: 6, y: 6 }); // 蘋果的位置
-  const [direction, setDirection] = useState("right"); // 蛇的移動方向
+  const [snake, setSnake] = useState([randomPosition()]); // 蛇的起始位置
+  const [apple, setApple] = useState(initialApple); // 蘋果的位置
+  const [direction, setDirection] = useState(initialDirection); // 蛇的移動方向
   const [over, setOver] = useState(false);
-  const [score, setScore] = useState(0);
+  const [score, setScore] = useState(initialScore);
+
+  const [highScore, setHighScore] = useState(() => {
+    const savedHighScore = localStorage.getItem("highScore");
+    return savedHighScore ? parseInt(savedHighScore, 10) : 0; // 確保是數字，若無則預設為 0
+  });
 
   useEffect(() => {
     const handleKeyDown = ({ key }) => {
       if (over && key === " ") {
         restartGame();
       }
-
+      // 設定方向，不會來時的路徑
       if (key === "ArrowLeft" && direction !== "right") setDirection("left");
       else if (key === "ArrowRight" && direction !== "left")
         setDirection("right");
       else if (key === "ArrowUp" && direction !== "down") setDirection("up");
       else if (key === "ArrowDown" && direction !== "up") setDirection("down");
     };
-    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown); // 監聽鍵盤事件
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [direction]);
+  }, [direction, over]);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      if (over) {
-        // clearInterval(timer);
-        return;
-      }
+      if (over) return;
       const head = { ...snake[0] };
 
       if (direction === "right") head.x += 1;
@@ -55,7 +60,9 @@ function App() {
         handleGameover();
         return;
       }
+
       const snakeCopy = [head, ...snake];
+
       if (apple.x === head.x && apple.y === head.y) {
         setApple({
           x: Math.floor(Math.random() * 15),
@@ -69,26 +76,23 @@ function App() {
       setSnake(snakeCopy);
     }, 100); // 速度
     return () => clearInterval(timer);
-  }, [snake, direction]);
+  }, [snake, direction, apple, score, over]);
 
   const handleGameover = () => {
     setDirection("stop");
     setOver(true);
+
+    if (score > highScore) {
+      localStorage.setItem("highScore", score); // 儲存最高分到localStorage
+      setHighScore(score); //更新最高分
+    }
   };
 
   const restartGame = () => {
     setOver(false);
-    setSnake([
-      {
-        x: Math.floor(Math.random() * 15),
-        y: Math.floor(Math.random() * 15),
-      },
-    ]); // 重新設定蛇的位置
-    setApple({
-      x: Math.floor(Math.random() * 15),
-      y: Math.floor(Math.random() * 15),
-    }); // 重新設定蘋果的位置
-    setScore(0);
+    setSnake([randomPosition()]); // 重新設定蛇的位置
+    setApple(initialApple); // 重新設定蘋果的位置
+    setScore(initialScore);
   };
 
   return (
@@ -119,6 +123,7 @@ function App() {
           )}
       </div>
       <div className="score">得分: {score} </div>
+      <div className="score">歷史高分: {highScore} </div>
       {over && (
         <>
           <div className="score">遊戲結束</div>
