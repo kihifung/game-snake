@@ -1,3 +1,7 @@
+展示連結：https://a-snake-grow-game.netlify.app/
+
+---
+
 # 動手玩 React！（貪食蛇）
 
 線上試玩：https://5xcampus-game-snake.netlify.app/
